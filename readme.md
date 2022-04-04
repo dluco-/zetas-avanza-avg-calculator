@@ -2,8 +2,6 @@
 
 ![Readme image](/readme.png)
 
-Calculate your average gain/loss, your max/min gain/loss, No. of gain/loss and the total SEK gain/loss for desired period.
-
 # Requirements
 
 Python 3, https://www.python.org/downloads/
