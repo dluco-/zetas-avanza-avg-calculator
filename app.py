@@ -58,11 +58,11 @@ print("### SUMMARY ###\n")
 print(f"Account:\t {DESIRED_ACCOUNT}")
 print(f"Period:\t\t {df['Datum'].min()} - {df['Datum'].max()}\n")
 
-print(f"Max gain (%):\t {percentage_change.max():.2f} %")
-print(f"Max loss (%):\t {percentage_change.min():.2f} %\n")
+print(f"Max gain (%):\t {percentage_change.max():.2f} % (* INSERT NAME *)")
+print(f"Max loss (%):\t {percentage_change.min():.2f} % (* INSERT NAME *)\n")
 
-print(f"Max gain (SEK):\t {sum_gain.max():.0f} SEK")
-print(f"Max loss (SEK):\t {sum_gain.min():.0f} SEK\n")
+print(f"Max gain (SEK):\t {sum_gain.max():.0f} SEK (* INSERT NAME *)")
+print(f"Max loss (SEK):\t {sum_gain.min():.0f} SEK (* INSERT NAME *)\n")
 
 print(
     f"Average gain:\t {percentage_change[percentage_change > 0].mean():.2f} %")
