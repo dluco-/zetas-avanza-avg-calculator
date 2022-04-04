@@ -1,14 +1,9 @@
 import pandas as pd
 
 DESIRED_ACCOUNT = 'Rocket 🚀'
-FILE = 'data/transaktioner_2022-01-01_2022-03-26.csv'
+FILE = 'data/transaktioner_2021-01-01_2021-12-31.csv'
 
 pd.set_option('display.max_rows', None)
-
-
-def format_kronor(x):
-    return '{:,.0f} kr'.format(x)
-
 
 # Read in the CSV file
 df = pd.read_csv(FILE, delimiter=";")
@@ -19,11 +14,14 @@ df = df[df['Konto'] == DESIRED_ACCOUNT]
 # Filter the datafram to only include ones that have ISIN not equal to -
 df = df[df['ISIN'] != '-']
 
-# Filter the dataframe to only include transactions in the desired date range
-# df = df[df['Datum'].str.contains('2022')]
+# Filter the dataframe to only include ones of the desired Typ av transaktion (Köp, Sälj)
+df = df[df['Typ av transaktion'].isin(['Köp', 'Sälj'])]
 
 # Convert Antal to int
 df['Antal'] = df['Antal'].astype(int)
+
+# Convert Belopp to float
+df['Belopp'] = df['Belopp'].astype(float)
 
 # Filter the datafram to only include transactions of same ISIN that have the same Antal
 df = df.groupby(['ISIN', 'Värdepapper/beskrivning']
@@ -43,24 +41,28 @@ percentage_change = ((sum_sell / sum_buy * -1) - 1) * 100
 # Create a dataframe with the desired columns
 output = pd.concat(
     [
-        sum_sell.apply(format_kronor),
-        sum_buy.apply(format_kronor),
-        sum_gain.apply(format_kronor),
+        sum_sell.apply('{:.0f}'.format),
+        sum_buy.apply('{:.0f}'.format),
+        sum_gain.apply('{:.0f}'.format),
         percentage_change.apply('{:,.2f} %'.format),
     ],
     axis=1,
     keys=['Sell (SEK)', 'Buy (SEK)', 'Gain (SEK)', 'Change (%)'])
 
-# Sort output by gain
-output = output.sort_values(by=['Gain (SEK)'], ascending=False)
+# Sort the dataframe by the gain
+output = output.iloc[pd.to_numeric(output['Gain (SEK)']).argsort()[::-1]]
+
 
 print("### SUMMARY ###\n")
 
 print(f"Account:\t {DESIRED_ACCOUNT}")
 print(f"Period:\t\t {df['Datum'].min()} - {df['Datum'].max()}\n")
 
-print(f"Max gain:\t {percentage_change.max():.2f} %")
-print(f"Max loss:\t {percentage_change.min():.2f} %\n")
+print(f"Max gain (%):\t {percentage_change.max():.2f} %")
+print(f"Max loss (%):\t {percentage_change.min():.2f} %\n")
+
+print(f"Max gain (SEK):\t {sum_gain.max():.0f} SEK")
+print(f"Max loss (SEK):\t {sum_gain.min():.0f} SEK\n")
 
 print(
     f"Average gain:\t {percentage_change[percentage_change > 0].mean():.2f} %")
@@ -71,7 +73,7 @@ print(
     f"No. gain/loss:\t {percentage_change[percentage_change > 0].count()}/{percentage_change[percentage_change < 0].count()}")
 
 # print sum of all gains
-print(f"Total gain/loss: {sum_gain.sum():,.0f} kr")
+print(f"Total gain/loss: {sum_gain.sum():,.0f} SEK")
 
 print("\n### RESULTS ###\n")
 
