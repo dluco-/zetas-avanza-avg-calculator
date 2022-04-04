@@ -1,7 +1,7 @@
 import pandas as pd
 
 DESIRED_ACCOUNT = 'Rocket 🚀'
-FILE = 'data/transaktioner_2021-01-01_2021-12-31.csv'
+FILE = 'data/transaktioner_2022-01-01_2022-03-26.csv'
 
 pd.set_option('display.max_rows', None)
 
@@ -52,6 +52,8 @@ output = pd.concat(
 # Sort the dataframe by the gain
 output = output.iloc[pd.to_numeric(output['Gain (SEK)']).argsort()[::-1]]
 
+profit = sum_gain.sum()
+
 
 print("### SUMMARY ###\n")
 
@@ -73,7 +75,7 @@ print(
     f"No. gain/loss:\t {percentage_change[percentage_change > 0].count()}/{percentage_change[percentage_change < 0].count()}")
 
 # print sum of all gains
-print(f"Total gain/loss: {sum_gain.sum():,.0f} SEK")
+print(f"Total gain/loss: {profit:,.0f} SEK {'🍾' if profit > 0 else '🤮'}")
 
 print("\n### RESULTS ###\n")
 
