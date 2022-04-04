@@ -6,7 +6,7 @@ Calculate your average gain/loss, your max/min gain/loss, No. of gain/loss and t
 
 # Requirements
 
-Python 3
+Python 3, https://www.python.org/downloads/
 
 # How to?
 
