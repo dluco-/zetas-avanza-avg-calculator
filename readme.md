@@ -14,3 +14,7 @@ Python 3, https://www.python.org/downloads/
 4. Edit DESIRED_ACCOUNT and FILE values in `app.py`
 5. Activate python env, https://docs.python.org/3/tutorial/venv.html#creating-virtual-environments
 6. Run `python3 app.py`
+
+# Docker
+
+Run `docker run -it --rm $(docker build -q .)`
