@@ -6,7 +6,7 @@ def main(desired_account: str, file_path: str):
     pd.set_option('display.max_rows', None)
 
     # Read in the CSV file
-    df = pd.read_csv(file_path, delimiter=";")
+    df = pd.read_csv(file_path, delimiter=";", decimal=",")
 
     # Filter the dataframe to only include the desired account
     df = df[df['Konto'] == desired_account]
@@ -47,7 +47,7 @@ def main(desired_account: str, file_path: str):
         'account': desired_account,
         'period': f"{df['Datum'].min()} - {df['Datum'].max()}",
         'profit': output['Gain/loss (SEK)'].sum(),
-        'no': {
+        'numbers': {
             'gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].count(),
             'loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].count(),
         },
