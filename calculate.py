@@ -51,17 +51,19 @@ def main(desired_account: str, file_path: str):
             'gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].count(),
             'loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].count(),
         },
-        'max_gain': {
-            'percentage': output['Gain/loss (%)'].max(),
-            'amount': output['Gain/loss (SEK)'].max(),
-        },
-        'min_gain': {
-            'percentage': output['Gain/loss (%)'].min(),
-            'amount': output['Gain/loss (SEK)'].min(),
+        'max': {
+            'gain': {
+                'percentage': output['Gain/loss (%)'].max(),
+                'amount': output['Gain/loss (SEK)'].max(),
+            },
+            'loss': {
+                'percentage': output['Gain/loss (%)'].min(),
+                'amount': output['Gain/loss (SEK)'].min(),
+            }
         },
         'avg': {
             'gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].mean(),
             'loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].mean(),
         },
-        'transactions': output.to_json(orient='records', lines=False, force_ascii=False)
+        # 'transactions': output.to_json(orient='records', lines=False, force_ascii=False)
     }
