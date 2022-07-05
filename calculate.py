@@ -1,17 +1,15 @@
+import json
 
 import pandas as pd
 from numpy import outer
 
 
-def main(desired_account: str, file_path: str):
+def main(file_path: str):
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
 
     # Read in the CSV file
     df = pd.read_csv(file_path, delimiter=";", decimal=",")
-
-    # Filter the dataframe to only include the desired account
-    df = df[df['Konto'] == desired_account]
 
     # Filter the datafram to only include ones that have ISIN not equal to -
     df = df[df['ISIN'] != '-']
@@ -55,15 +53,15 @@ def main(desired_account: str, file_path: str):
         ['ISIN', 'Värdepapper/beskrivning', 'Gain/loss (SEK)', 'Gain/loss (%)', 'Gain/loss days']].median()
 
     return {
-        'account': desired_account,
+        'accounts': df['Konto'].drop_duplicates().tolist(),
         'period': f"{df['Datum'].min()} - {df['Datum'].max()}",
         'avg_gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].mean(),
         'avg_loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].mean(),
         'win_percentage': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].count() / output['ISIN'].count() * 100,
-        'total_trades': output['ISIN'].count(),
+        'total_trades': int(output['ISIN'].count()),
         'lg_gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].max(),
         'lg_loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].min(),
         'avg_gain_days': output[output['Gain/loss (%)'] > 0]['Gain/loss days'].mean(),
         'avg_loss_days': output[output['Gain/loss (%)'] < 0]['Gain/loss days'].mean(),
-        # 'transactions': output.to_json(orient='records', lines=False, force_ascii=False)
+        'transactions': json.loads(output.to_json(orient='records', lines=False, force_ascii=False))
     }

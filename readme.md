@@ -18,3 +18,9 @@ Python 3, https://www.python.org/downloads/
 # Docker
 
 Run `docker run -it --rm $(docker build -q .)`
+
+# API
+
+1. Start server with `flask run`
+2. Upload a file with `curl -L -X POST 'http://127.0.0.1:5000/upload' -F 'file=@"/Users/dennisolsson/Develop/zetas-avanza-avg-calculator/uploads/transaktioner_2022-01-01_2022-07-04.csv"'`
+3. Calculate return with `curl -L -X POST 'http://127.0.0.1:5000/calculate' -F 'filename="transaktioner_2022-01-01_2022-07-04.csv"'`
