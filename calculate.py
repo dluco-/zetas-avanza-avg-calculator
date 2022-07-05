@@ -49,11 +49,10 @@ def main(file_path: str):
     df = df.sort_values(by=['Värdepapper/beskrivning',
                         'Datum'], ascending=[True, True])
 
-    output = df.groupby(['ISIN', 'Värdepapper/beskrivning'], as_index=False)[
-        ['ISIN', 'Värdepapper/beskrivning', 'Gain/loss (SEK)', 'Gain/loss (%)', 'Gain/loss days']].median()
+    output = df.groupby(['Konto', 'ISIN', 'Värdepapper/beskrivning'], as_index=False)[
+        ['Konto', 'ISIN', 'Värdepapper/beskrivning', 'Gain/loss (SEK)', 'Gain/loss (%)', 'Gain/loss days']].median()
 
     return {
-        'accounts': df['Konto'].drop_duplicates().tolist(),
         'period': f"{df['Datum'].min()} - {df['Datum'].max()}",
         'avg_gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].mean(),
         'avg_loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].mean(),
