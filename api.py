@@ -1,7 +1,6 @@
 import os
 
-from flask import (Flask, flash, jsonify, redirect, request,
-                   send_from_directory, url_for)
+from flask import Flask, flash, redirect, request, send_from_directory
 from werkzeug.utils import secure_filename
 
 from calculate import main as do_calculation
@@ -10,9 +9,7 @@ UPLOAD_FOLDER = f"{os.getcwd()}/uploads"
 ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 
 def allowed_file(filename):
     return '.' in filename and \
