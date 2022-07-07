@@ -42,7 +42,7 @@ def main(file_path: str):
         (df[df['Sum buy/sell amount (SEK)'] < 0]
          ['Sum buy/sell amount (SEK)'] * -1) * 100
 
-    df['Gain/loss days'] = (df.groupby(['ISIN'])['Datum'].transform('max') -
+    df['Trade days'] = (df.groupby(['ISIN'])['Datum'].transform('max') -
                             df.groupby(['ISIN'])['Datum'].transform('min')).dt.days
 
     # Sort dataframe
@@ -50,7 +50,7 @@ def main(file_path: str):
                         'Datum'], ascending=[True, True])
 
     output = df.groupby(['Konto', 'ISIN', 'Värdepapper/beskrivning'], as_index=False)[
-        ['Konto', 'ISIN', 'Värdepapper/beskrivning', 'Gain/loss (SEK)', 'Gain/loss (%)', 'Gain/loss days']].median()
+        ['Konto', 'ISIN', 'Värdepapper/beskrivning', 'Gain/loss (SEK)', 'Gain/loss (%)', 'Trade days']].median()
 
     return json.dumps({
         'period': f"{df['Datum'].min()} - {df['Datum'].max()}",
@@ -60,7 +60,7 @@ def main(file_path: str):
         'total_trades': int(output['ISIN'].count()),
         'lg_gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].max(),
         'lg_loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].min(),
-        'avg_gain_days': output[output['Gain/loss (%)'] > 0]['Gain/loss days'].mean(),
-        'avg_loss_days': output[output['Gain/loss (%)'] < 0]['Gain/loss days'].mean(),
+        'avg_gain_days': output[output['Gain/loss (%)'] > 0]['Trade days'].mean(),
+        'avg_loss_days': output[output['Gain/loss (%)'] < 0]['Trade days'].mean(),
         'transactions': json.loads(output.to_json(orient='records', lines=False, force_ascii=False))
     })

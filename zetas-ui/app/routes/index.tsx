@@ -16,22 +16,21 @@ export default function Index() {
   const submit = useSubmit();
   const data = useActionData();
   return (
-    <main className="m-4">
+    <main className="m-4 flex flex-col">
       <form
-        className="my-4"
         onChange={(event) => submit(event.currentTarget)}
         method="post"
         encType="multipart/form-data"
       >
         <input
-          className="px-10 py-8 cursor-pointer border-4 border-red-300 bg-red-400 text-white w-full hover:opacity-80"
+          className="w-full cursor-pointer border-4 border-red-300 bg-red-400 px-10 py-8 text-white hover:opacity-80"
           type="file"
           name="file"
         />
       </form>
 
       {data && (
-        <pre className="m-4 rounded-xl bg-gray-100 p-4">
+        <pre className="my-4 rounded-xl bg-gray-100 p-4">
           <code>{JSON.stringify(data, null, 2)}</code>
         </pre>
       )}
