@@ -52,7 +52,7 @@ def main(file_path: str):
     output = df.groupby(['Konto', 'ISIN', 'Värdepapper/beskrivning'], as_index=False)[
         ['Konto', 'ISIN', 'Värdepapper/beskrivning', 'Gain/loss (SEK)', 'Gain/loss (%)', 'Gain/loss days']].median()
 
-    return {
+    return json.dumps({
         'period': f"{df['Datum'].min()} - {df['Datum'].max()}",
         'avg_gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].mean(),
         'avg_loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].mean(),
@@ -63,4 +63,4 @@ def main(file_path: str):
         'avg_gain_days': output[output['Gain/loss (%)'] > 0]['Gain/loss days'].mean(),
         'avg_loss_days': output[output['Gain/loss (%)'] < 0]['Gain/loss days'].mean(),
         'transactions': json.loads(output.to_json(orient='records', lines=False, force_ascii=False))
-    }
+    })
