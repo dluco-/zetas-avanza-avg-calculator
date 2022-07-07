@@ -1,5 +1,17 @@
-import { useActionData, useSubmit } from "@remix-run/react";
-import type { ActionFunction } from "@remix-run/server-runtime";
+import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
+import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const fileName = url.searchParams.get("f");
+
+  if (!fileName) return null;
+
+  const response = await fetch(`http://127.0.0.1:5000/?fileName=${fileName}`);
+
+  if (!response.ok) return null;
+  return response.json();
+};
 
 export const action: ActionFunction = async ({ request }) => {
   const body = await request.formData();
@@ -9,12 +21,16 @@ export const action: ActionFunction = async ({ request }) => {
     body,
   });
 
+  if (!response.ok) return null;
+
   return response.json();
 };
 
 export default function Index() {
   const submit = useSubmit();
-  const data = useActionData();
+  const loaderData = useLoaderData();
+  const actionData = useActionData();
+
   return (
     <main className="m-4 flex flex-col">
       <form
@@ -29,9 +45,9 @@ export default function Index() {
         />
       </form>
 
-      {data && (
+      {(loaderData || actionData) && (
         <pre className="my-4 rounded-xl bg-gray-100 p-4">
-          <code>{JSON.stringify(data, null, 2)}</code>
+          <code>{JSON.stringify(loaderData || actionData, null, 2)}</code>
         </pre>
       )}
     </main>

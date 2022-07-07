@@ -22,8 +22,21 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET", "POST"])
 def main():
+
+    if request.method == 'GET':
+        fileName = request.args.get("fileName")
+
+        if not fileName:
+            return "No file name provided", 400
+
+        if not allowed_file(fileName):
+            return "File type not allowed", 400
+
+        return do_calculation(os.path.join(
+            app.config['UPLOAD_FOLDER'], fileName))
+
     # check if the post request has the file part
     if 'file' not in request.files:
         flash('No file part')
@@ -37,7 +50,6 @@ def main():
     if file.filename == '':
         flash('No selected file')
         return "No selected file", 400
-        # return redirect(request.url)
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
