@@ -17,7 +17,11 @@ Python 3, https://www.python.org/downloads/
 
 # Docker
 
-Run `docker run -it --rm $(docker build -q .)`
+Run `docker run -it -p 5000:5000 --rm $(docker build -q .)`
+
+# UI
+
+Run `npm start`
 
 # API
 
