@@ -11,20 +11,50 @@ Python 3, https://www.python.org/downloads/
 1. Go to https://www.avanza.se/min-ekonomi/transaktioner.html
 2. Download desired transactions as .csv
 3. Save to `~/data` folder.
-4. Edit DESIRED_ACCOUNT and FILE values in `app.py`
-5. Activate python env, https://docs.python.org/3/tutorial/venv.html#creating-virtual-environments
-6. Run `python3 app.py`
+4. Run `python3 app.py`
 
-# Docker
+# Installation
 
-Run `docker run -it -p 5000:5000 --rm $(docker build -q .)`
+## Backend
 
-# UI
+(Activate python env, https://docs.python.org/3/tutorial/venv.html#creating-virtual-environments)
 
-Run `npm start`
+```bash
+cd /zetas-api
+source venv/bin/activate
+python3 -m pip install -r requirements.txt
+```
 
-# API
+### During development
 
-1. Start server with `flask run`
-2. Upload a file with `curl -L -X POST 'http://127.0.0.1:5000/upload' -F 'file=@"/Users/dennisolsson/Develop/zetas-avanza-avg-calculator/uploads/transaktioner_2022-01-01_2022-07-04.csv"'`
-3. Calculate return with `curl -L -X POST 'http://127.0.0.1:5000/calculate' -F 'filename="transaktioner_2022-01-01_2022-07-04.csv"'`
+```bash
+python3 app.py
+```
+
+### Testing API
+
+```bash
+export FLASK_APP=api.py
+export FLASK_DEBUG=true
+python3 -m flask run
+```
+
+Making API requests:
+
+1. Upload a file with `curl -L -X POST 'http://127.0.0.1:5000' -F 'file=@"/Users/dennisolsson/Develop/zetas-avanza-avg-calculator/zetas-api/uploads/transaktioner_2022-01-01_2022-05-05.csv"'`
+2. Calculate return of an already uploaded file with `curl -L -X GET 'http://127.0.0.1:5000/?fileName=transaktioner_2022-01-01_2022-05-05.csv'`
+
+### Docker
+
+```bash
+cd /zetas-api
+docker run -it -p 5000:5000 --rm $(docker build -q .)
+```
+
+## Frontend
+
+```bash
+cd /zetas-ui
+npm install
+npm run dev
+```
