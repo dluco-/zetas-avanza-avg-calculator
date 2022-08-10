@@ -1,3 +1,4 @@
+import decimal
 import json
 
 import pandas as pd
@@ -9,19 +10,21 @@ def main(file_path: str):
     pd.set_option('display.max_columns', None)
 
     # Read in the CSV file
-    df = pd.read_csv(file_path, delimiter=";", decimal=",")
+    df = pd.read_csv(file_path, delimiter=";", decimal=",", dtype=object)
 
-    # Filter the datafram to only include ones that have ISIN not equal to -
-    df = df[df['ISIN'] != '-']
+    # Filter the datafram to only include ones that have ISIN, Antal and Belopp not equal to -
+    df = df[(df['ISIN'] != '-') & (df['Antal'] != '-') & (df['Belopp'] != '-')]
 
     # Filter the dataframe to only include ones of the desired Typ av transaktion (Köp, Sälj)
     df = df[df['Typ av transaktion'].isin(['Köp', 'Sälj'])]
 
-    # Convert Antal to int
-    df['Antal'] = df['Antal'].astype(int)
+    # Handle comma separator in Antal and convert to float
+    df['Antal'] = pd.to_numeric(
+        df['Antal'].str.replace(",", "."), errors='raise')
 
-    # Convert Belopp to float
-    df['Belopp'] = df['Belopp'].astype(float)
+    # Handle comma separator in Belopp and convert to float
+    df['Belopp'] = pd.to_numeric(
+        df['Belopp'].str.replace(",", "."), errors='raise')
 
     # Convert Datum to Date
     df['Datum'] = pd.to_datetime(df['Datum'])
@@ -43,7 +46,7 @@ def main(file_path: str):
          ['Sum buy/sell amount (SEK)'] * -1) * 100
 
     df['Trade days'] = (df.groupby(['ISIN'])['Datum'].transform('max') -
-                            df.groupby(['ISIN'])['Datum'].transform('min')).dt.days
+                        df.groupby(['ISIN'])['Datum'].transform('min')).dt.days
 
     # Sort dataframe
     df = df.sort_values(by=['Värdepapper/beskrivning',
@@ -52,11 +55,14 @@ def main(file_path: str):
     output = df.groupby(['Konto', 'ISIN', 'Värdepapper/beskrivning'], as_index=False)[
         ['Konto', 'ISIN', 'Värdepapper/beskrivning', 'Gain/loss (SEK)', 'Gain/loss (%)', 'Trade days']].median()
 
+    if output.empty:
+        return json.dumps({'error': 'No data found'})
+
     return json.dumps({
         'period': f"{df['Datum'].min()} - {df['Datum'].max()}",
         'avg_gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].mean(),
         'avg_loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].mean(),
-        'win_percentage': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].count() / output['ISIN'].count() * 100,
+        'win_percentage': (output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].count() / output['ISIN'].count() * 100) if output['ISIN'].count() else float('nan'),
         'total_trades': int(output['ISIN'].count()),
         'lg_gain': output[output['Gain/loss (%)'] > 0]['Gain/loss (%)'].max(),
         'lg_loss': output[output['Gain/loss (%)'] < 0]['Gain/loss (%)'].min(),
